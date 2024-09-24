@@ -18,7 +18,8 @@ For now this package cannot be used with SSR, contributions to improve in that a
 - [x] Text layer rendering
 - [x] SvelteKit compatibility
 - [ ] SVG renderer
-- [ ] Annotation layer
+- [x] Annotation layer
+- [ ] Annotation layer page redirect support
 - [ ] Error handling
 - [ ] Expose more stuff
 

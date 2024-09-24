@@ -46,6 +46,18 @@ Render a page from a PDF document. Must be a child of a `Document` component.
 	export let renderTextLayer: boolean = false;
 
 	/**
+	 * Render a separate annotation layer (only for the canvas renderer.)
+	 * @default {false}
+	 */
+	export let renderAnnotationLayer: boolean = false;
+
+	/**
+	 * Path for the svg icons that the annotation layer use
+	 * @default {""}
+	 */
+	export let imageResourcesPath: string = "";
+
+	/**
 	 * A callback invoked with the current page used to determine the viewport.
 	 * Use this if you need something more complicated than the default based on scale.
 	 */
@@ -80,6 +92,8 @@ Render a page from a PDF document. Must be a child of a `Document` component.
 		{page}
 		{viewport}
 		render_text_layer={renderer === 'canvas' ? renderTextLayer : false}
+		render_annotation_layer={renderer === 'canvas' ? renderAnnotationLayer : false}
+		imageResourcePath={imageResourcesPath}
 		on:pagerendersuccess
 		on:pagerendererror
 	/>

@@ -1,5 +1,12 @@
 # svelte-pdfjs
 
+## 0.10.0
+
+### Minor Changes
+- added basic support to annotation layers
+
+
+
 ## 0.9.0
 
 ### Minor Changes

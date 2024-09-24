@@ -17,6 +17,7 @@
 	export let viewport: PageViewport;
 	export let render_text_layer: boolean;
 	export let render_annotation_layer: boolean = true;
+	export let imageResourcePath: string = "";
 	export let canvasStyles = '';
 
 	let canvas: HTMLCanvasElement;
@@ -56,7 +57,7 @@
 		<TextLayer {page} {viewport} />
 	{/if}
 	{#if render_annotation_layer}
-		<AnnotLayer {page} {viewport} />
+		<AnnotLayer {page} {viewport} {imageResourcePath} />
 	{/if}
 </div>
 

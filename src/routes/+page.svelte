@@ -10,8 +10,10 @@
 	let filename = 'pdf_commenting_new.pdf'
 	let max_pages = 1;
 	let renderTextLayer = false;
+	let renderAnnotationLayer = false;
 	let target_height = 500;
 	let rotation: MultipleOf90 = 0;
+	const imageResourcesPath = `/pdfjsicons/`;
 
 	let sizing = 1;
 </script>
@@ -22,10 +24,13 @@
 	<select bind:value={filename}>
 		<option>tackling-ts-preview-book.pdf</option>
 		<option>impatient-js-preview-book.pdf</option>
+		<option>pdf_commenting_new.pdf</option>
 		<option value="a.pdf">non existent file</option>
 	</select>
 
 	<input type="checkbox" bind:checked={renderTextLayer} /> Render text layer
+
+	<input type="checkbox" bind:checked={renderAnnotationLayer} /> Render annotation layer
 
 	<fieldset>
 		<legend>Dimensions</legend>
@@ -73,6 +78,8 @@
 				{scale}
 				{num}
 				{renderTextLayer}
+				{renderAnnotationLayer}
+				{imageResourcesPath}
 				{rotation}
 				getViewport={sizing === 1 ? undefined : preferThisHeight(target_height)}
 			/>
