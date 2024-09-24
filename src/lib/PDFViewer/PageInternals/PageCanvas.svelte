@@ -4,6 +4,7 @@
 	import type { PageViewport } from 'pdfjs-dist/types/src/display/display_utils.js';
 	import { createEventDispatcher, tick } from 'svelte';
 	import TextLayer from './TextLayer.svelte';
+	import AnnotLayer from './AnnotLayer.svelte';
 </script>
 
 <script lang="ts">
@@ -15,6 +16,7 @@
 	export let page: PDFPageProxy;
 	export let viewport: PageViewport;
 	export let render_text_layer: boolean;
+	export let render_annotation_layer: boolean = true;
 	export let canvasStyles = '';
 
 	let canvas: HTMLCanvasElement;
@@ -52,6 +54,9 @@
 	/>
 	{#if render_text_layer}
 		<TextLayer {page} {viewport} />
+	{/if}
+	{#if render_annotation_layer}
+		<AnnotLayer {page} {viewport} />
 	{/if}
 </div>
 

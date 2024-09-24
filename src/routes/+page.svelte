@@ -6,7 +6,8 @@
 
 	let scale = 1;
 	let num = 1;
-	let filename = 'tackling-ts-preview-book.pdf';
+	// let filename = 'tackling-ts-preview-book.pdf';
+	let filename = 'pdf_commenting_new.pdf'
 	let max_pages = 1;
 	let renderTextLayer = false;
 	let target_height = 500;
