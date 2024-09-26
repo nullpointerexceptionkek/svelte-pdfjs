@@ -10,7 +10,7 @@ See [src/routes/+page.svelte](src/routes/+page.svelte) and [src/routes/+layout.s
 [Demo](https://gtm-nayan.github.io/svelte-pdfjs)
 
 ```
-npm i svelte-pdf
+npm i svelte-pdfjs
 ```
 
 Please see [guide](DOCUMENTATION.md) for a quick start.
