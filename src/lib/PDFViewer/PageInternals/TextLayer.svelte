@@ -1,30 +1,50 @@
 <script lang="ts">
 	import { BROWSER } from 'esm-env';
 	import type { PageViewport, PDFPageProxy, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs';
-	import '$lib/css/TextLayer.css'
+	import 'pdfjs-dist/legacy/web/pdf_viewer.css';
+	import { untrack } from 'svelte';
 
-	export let page: PDFPageProxy;
-	export let viewport: PageViewport;
+	interface Props {
+		page: PDFPageProxy;
+		viewport: PageViewport;
+	}
+
+	let { page, viewport }: Props = $props();
 
 	let render_task: TextLayer;
-	let container: HTMLDivElement;
+	let container: HTMLDivElement | undefined = $state();
+	let render_version = 0;
 
-	
-	async function render_text_layer() {
-		container.textContent = '';
+	async function render_text_layer(_page: PDFPageProxy, _viewport: PageViewport, _container: HTMLDivElement) {
+		const my_version = ++render_version;
+		
+		_container.textContent = '';
 		const {TextLayer} = await import('pdfjs-dist/legacy/build/pdf.mjs');
 
 		render_task?.cancel();
+		
+		if (my_version !== render_version) return;
+		
 		render_task = new TextLayer({
-			container,
-			textContentSource: page.streamTextContent(),
-			viewport,
+			container: _container,
+			textContentSource: _page.streamTextContent(),
+			viewport: _viewport,
 		});
-		await render_task.render();
+		try {
+			await render_task.render();
+		} catch (err: any) {
+			throw err;
+		}
 	}
 
-	$: if (BROWSER && container && viewport) render_text_layer();
+	$effect(() => {
+		const _page = page;
+		const _viewport = viewport;
+		const _container = container;
+		if (BROWSER && _page && _viewport && _container) {
+			untrack(() => render_text_layer(_page, _viewport, _container));
+		}
+	});
 </script>
 
-<div class="textLayer" bind:this={container} />
-
+<div class="textLayer" bind:this={container}></div>

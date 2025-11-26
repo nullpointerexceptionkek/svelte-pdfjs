@@ -8,10 +8,11 @@ The `Document` and `Page` components are designed to work together to load and d
 
 We provide utility function to set up the `pdfjs-worker src` :
 Example +layout.svelte
+
 ```svelte
 <script lang="ts">
 	import { set_pdfjs_context } from 'svelte-pdfjs/vite';
-	
+
 	set_pdfjs_context();
 </script>
 
@@ -19,6 +20,7 @@ Example +layout.svelte
 ```
 
 If you choose not to use this utility, you will have to set the context manually
+
 ```js
 setContext('svelte_pdfjs_worker', worker);
 ```
@@ -35,7 +37,7 @@ children Page components through the context API.
 
 - **loadOptions** `(DocumentInitParameters | undefined)`  
    Extra options provided to PDFJS.getDocument.
-   https://github.com/mozilla/pdf.js/blob/41dab8e7b6c1e2684d4afabb8f02e40a874d8e85/src/display/api.js#L126
+  https://github.com/mozilla/pdf.js/blob/41dab8e7b6c1e2684d4afabb8f02e40a874d8e85/src/display/api.js#L126
 
   **Example:**
 
@@ -77,6 +79,7 @@ children Page components through the context API.
 ```
 
 ## Page Component
+
 Render a page from a PDF document. Must be a child of a `Document` component.
 
 ### Props
@@ -162,4 +165,3 @@ Render a page from a PDF document. Must be a child of a `Document` component.
 See [src/routes/+page.svelte](src/routes/+page.svelte), [src/routes/multipage/+page.svelte](src/routes/multipage/+page.svelte), [src/routes/+layout.svelte](src/routes/+layout.svelte)
 
 [Demo](https://gtm-nayan.github.io/svelte-pdfjs)
-

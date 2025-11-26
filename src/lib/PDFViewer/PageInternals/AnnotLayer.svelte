@@ -6,51 +6,82 @@
 		AnnotationLayer,
 	} from 'pdfjs-dist/legacy/build/pdf.mjs';
 	import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.mjs';
-    import '$lib/css/AnnotationLayer.css'
+	import 'pdfjs-dist/legacy/web/pdf_viewer.css';
+	import { untrack } from 'svelte';
 
-	export let page: PDFPageProxy;
-	export let viewport: PageViewport; 
-    export let imageResourcePath: string;
-	let linkService: PDFLinkService;
-	let container: HTMLDivElement;
-	let render: AnnotationLayer;
-
-	async function initializeLinkService() {
-		linkService = new PDFLinkService();
-		linkService.setDocument(page._pdfDocument);
-		linkService.setViewer(null);//no full viewer
+	interface Props {
+		page: PDFPageProxy;
+		viewport: PageViewport; 
+		imageResourcePath: string;
 	}
 
-	async function render_annotation_layer() {
-		container.textContent = '';
+	let { page, viewport, imageResourcePath }: Props = $props();
+	let linkService: PDFLinkService;
+	let container: HTMLDivElement | undefined = $state();
+	let render: AnnotationLayer;
+	let render_version = 0;
+
+	// Mock viewer object for PDFLinkService (required in pdfjs-dist v5+)
+	const mockViewer = {
+		scrollPageIntoView: ({ pageNumber }: { pageNumber: number }) => {
+			// Could dispatch an event here if needed
+			console.log('scrollPageIntoView', pageNumber);
+		},
+	};
+
+	async function initializeLinkService(_page: PDFPageProxy) {
+		linkService = new PDFLinkService();
+		// @ts-expect-error - _pdfDocument is an internal property
+		linkService.setDocument(_page._pdfDocument);
+		linkService.setViewer(mockViewer);
+	}
+
+	async function render_annotation_layer(_page: PDFPageProxy, _viewport: PageViewport, _container: HTMLDivElement, _imageResourcePath: string) {
+		const my_version = ++render_version;
+		
+		_container.textContent = '';
 		const { AnnotationLayer } = await import(
 			'pdfjs-dist/legacy/build/pdf.mjs'
 		);
 
-        await initializeLinkService();
+		if (my_version !== render_version) return;
 
-		const annotations = await page.getAnnotations({ intent: 'display' });
+        await initializeLinkService(_page);
+
+		if (my_version !== render_version) return;
+
+		const annotations = await _page.getAnnotations({ intent: 'display' });
+
+		if (my_version !== render_version) return;
 
 		render = new AnnotationLayer({
-			div: container,
+			div: _container,
 			// accessibilityManager: any,
 			// annotationCanvasMap: any,
 			// annotationEditorUIManager: any,
-			page: page,
-			viewport: viewport,
+			page: _page,
+			viewport: _viewport,
 		} as never);
 		render.render({
 			annotations,
-			viewport: viewport,
-			div: container,
-			page: page,
+			viewport: _viewport,
+			div: _container,
+			page: _page,
 			linkService: linkService,
 			renderForms: false,
-            imageResourcesPath: imageResourcePath,
+            imageResourcesPath: _imageResourcePath,
 		});
 	}
 
-	$: if (BROWSER && container && viewport) render_annotation_layer();
+	$effect(() => {
+		const _page = page;
+		const _viewport = viewport;
+		const _container = container;
+		const _imageResourcePath = imageResourcePath;
+		if (BROWSER && _page && _viewport && _container) {
+			untrack(() => render_annotation_layer(_page, _viewport, _container, _imageResourcePath));
+		}
+	});
 </script>
 
-<div class="annotationLayer" bind:this={container} />
+<div class="annotationLayer" bind:this={container}></div>

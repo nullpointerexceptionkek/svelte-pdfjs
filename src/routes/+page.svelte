@@ -4,18 +4,18 @@
 
 	import { Document, Page, preferThisHeight, type MultipleOf90 } from 'svelte-pdfjs';
 
-	let scale = 1;
-	let num = 1;
+	let scale = $state(1);
+	let num = $state(1);
 	// let filename = 'tackling-ts-preview-book.pdf';
-	let filename = 'pdf_commenting_new.pdf'
-	let max_pages = 1;
-	let renderTextLayer = false;
-	let renderAnnotationLayer = false;
-	let target_height = 500;
-	let rotation: MultipleOf90 = 0;
+	let filename = $state('pdf_commenting_new.pdf')
+	let max_pages = $state(1);
+	let renderTextLayer = $state(false);
+	let renderAnnotationLayer = $state(false);
+	let target_height = $state(500);
+	let rotation: MultipleOf90 = $state(0);
 	const imageResourcesPath = `/pdfjsicons/`;
 
-	let sizing = 1;
+	let sizing = $state(1);
 </script>
 
 <section class="settings">
@@ -67,11 +67,11 @@
 	<Document
 		file="{base}/{filename}"
 		loadOptions={{ docBaseUrl: base }}
-		on:loadsuccess={(e) => {
-			max_pages = e.detail.numPages;
+		onloadsuccess={(doc) => {
+			max_pages = doc.numPages;
 			num = Math.min(num, max_pages);
 		}}
-		on:loaderror={(e) => alert(e.detail + '')}
+		onloaderror={(err) => alert(err + '')}
 	>
 		<div>
 			<Page
