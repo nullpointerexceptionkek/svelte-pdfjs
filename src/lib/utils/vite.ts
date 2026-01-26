@@ -4,12 +4,18 @@ import { onDestroy, setContext } from 'svelte';
 
 export function set_pdfjs_context() {
 	if (BROWSER) {
-		const worker = new pdfjs.PDFWorker({
-			port: new Worker(
-				new URL('pdfjs-dist/legacy/build/pdf.worker.mjs', import.meta.url), { type: 'module' }
-			) as unknown as null,
-		});
-		setContext('svelte_pdfjs_worker', worker);
-		onDestroy(() => worker.destroy());
+		try {
+			const workerUrl = new URL('pdfjs-dist/legacy/build/pdf.worker.mjs', import.meta.url);
+			console.log('Creating PDF worker with URL:', workerUrl.toString());
+			const worker = new pdfjs.PDFWorker({
+				port: new Worker(
+					workerUrl, { type: 'module' }
+				) as unknown as null,
+			});
+			setContext('svelte_pdfjs_worker', worker);
+			onDestroy(() => worker.destroy());
+		} catch (e) {
+			console.error('Failed to create PDF worker:', e);
+		}
 	}
 }

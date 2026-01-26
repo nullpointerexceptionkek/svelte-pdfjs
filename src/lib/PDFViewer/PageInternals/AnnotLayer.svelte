@@ -8,20 +8,27 @@
 	import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.mjs';
     import '$lib/css/AnnotationLayer.css'
 
-	export let page: PDFPageProxy;
-	export let viewport: PageViewport; 
-    export let imageResourcePath: string;
-	let linkService: PDFLinkService;
-	let container: HTMLDivElement;
-	let render: AnnotationLayer;
+	let { page, viewport, imageResourcePath }: { 
+		page: PDFPageProxy; 
+		viewport: PageViewport; 
+		imageResourcePath: string;
+	} = $props();
+	
+	let linkService: PDFLinkService | undefined = $state();
+	let container: HTMLDivElement | undefined = $state();
+	let render: AnnotationLayer | undefined = $state();
+	let rendering = $state(false);
+	let lastViewportId = $state<string>('');
 
 	async function initializeLinkService() {
 		linkService = new PDFLinkService();
-		linkService.setDocument(page._pdfDocument);
+		linkService.setDocument((page as any)._pdfDocument);
 		linkService.setViewer(null);//no full viewer
 	}
 
 	async function render_annotation_layer() {
+		if (!container || rendering) return;
+		rendering = true;
 		container.textContent = '';
 		const { AnnotationLayer } = await import(
 			'pdfjs-dist/legacy/build/pdf.mjs'
@@ -39,18 +46,29 @@
 			page: page,
 			viewport: viewport,
 		} as never);
-		render.render({
-			annotations,
-			viewport: viewport,
-			div: container,
-			page: page,
-			linkService: linkService,
-			renderForms: false,
-            imageResourcesPath: imageResourcePath,
-		});
+		if (render && linkService) {
+			render.render({
+				annotations,
+				viewport: viewport,
+				div: container,
+				page: page,
+				linkService: linkService,
+				renderForms: false,
+				imageResourcesPath: imageResourcePath,
+			});
+		}
+		rendering = false;
 	}
 
-	$: if (BROWSER && container && viewport) render_annotation_layer();
+	const viewportId = $derived(`${viewport.width}x${viewport.height}x${viewport.scale}`);
+
+	$effect(() => {
+		const currentId = viewportId;
+		if (BROWSER && container && viewport && !rendering && currentId && currentId !== lastViewportId) {
+			lastViewportId = currentId;
+			render_annotation_layer();
+		}
+	});
 </script>
 
-<div class="annotationLayer" bind:this={container} />
+<div class="annotationLayer" bind:this={container}></div>

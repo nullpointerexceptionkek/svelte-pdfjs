@@ -3,15 +3,15 @@
 	import { base } from '$app/paths';
 	import { Document, Page, preferThisWidth } from 'svelte-pdfjs';
 
-	let max_pages: number = 0;
+	let max_pages: number = $state(0);
 </script>
 
 {#if browser}
 	<Document
 		file="{base}/tackling-ts-preview-book.pdf"
 		loadOptions={{ docBaseUrl: base }}
-		on:loadsuccess={(e) => console.log((max_pages = e.detail.numPages))}
-		on:loaderror={console.log}
+		onloadsuccess={(doc: any) => console.log((max_pages = doc.numPages))}
+		onloaderror={console.log}
 	>
 		{#each Array(max_pages) as _, i}
 			<div>
